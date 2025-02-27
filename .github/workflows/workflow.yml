@@ -1,10 +1,58 @@
-name: deploy-toy-website
+name: myAction
+concurrency:
+    group: thEdenBbay
+    cancel-in-progress: false
 
 on: [workflow_dispatch]
 
+env:
+    AZURE_RESOURCEGROUP_NAME: bicep
+
+permissions:
+  id-token: write
+  contents: read
+
+defaults:
+  run:
+      shell: pwsh
+
 jobs:
-  say-hello:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: 'placeholder step'
-        run: echo "Hello world!"
+      - uses: actions/checkout@v4.2.2
+      - name: Azure Login
+        uses: Azure/login@v2.2.0
+        with:
+          client-id: ${{secrets.AZURE_CLIENT_ID}}
+          tenant-id: ${{env.TENANT_ID}}
+          enable-AzPSSession: true
+          allow-no-subscriptions: true
+          auth-type: 'SERVICE_PRINCIPAL'
+      - name: Deploy to Azure
+        id: deploy_main
+        env:
+          AZURE_RESOURCEGROUP_NAME: ${{ env.AZURE_RESOURCEGROUP_NAME }}
+        run: |
+            $ErrorActionPreference = 'Stop'
+            Set-StrictMode -Version 3
+            $InformationPreference = 'Continue'
+
+            Write-Information 'Install modules'
+            Install-Module -Name 'Az.Resources' -Force
+
+            $param = @{
+                Name = ${{ github.run_number }}
+                DeleteAll = $true
+                Force = $true
+                TemplateFile = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'deploy' -AdditionalChildPath @('main.bicep')
+                DenySettingsMode = 'none'
+                SkipTemplateParameterPrompt = $true
+                TemplateParameterObject = @{
+                    userAssignedIdentityName = 'configDeployer'
+                }
+            }
+
+            ($results = New-AzResourceGroupDeploymentStack @param -ResourceGroupName $env:AZURE_RESOURCEGROUP_NAME)
+
+            "groupId=$($results.Outputs.groupId.Value)" >> $env:GITHUB_OUTPUT
