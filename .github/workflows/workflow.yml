@@ -40,13 +40,13 @@ jobs:
             $InformationPreference = 'Continue'
 
             Write-Information 'Install modules'
-            Install-Module -Name 'Az.Resources' -Force
+            Install-Module -Name 'Az.Resources' -MaximumVersion  -Force
 
             Write-Information "Set the Azure subscription to [$env:AZURE_SUBSCRIPTION_ID]"
             Select-AzSubscription -SubscriptionId $env:AZURE_SUBSCRIPTION_ID
 
             $deploymentParameters = @{
-                'Name' = "$($env:GITHUB_WORKFLOW_RUN_NUMBER)_(Get-Date -AsUTC -Format 'yyyy-MM-ddTHH-mm-ss-ffff\Z')"
+                'Name' = "$($env:GITHUB_WORKFLOW_RUN_NUMBER)_$(Get-Date -Format FileDateTimeUniversal)"
                 'ResourceGroupName' = $env:AZURE_RESOURCE_GROUP_NAME
                 'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'deploy' -AdditionalChildPath @('main.bicep')
                 'Force' = $true

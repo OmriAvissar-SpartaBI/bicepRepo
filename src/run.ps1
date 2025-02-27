@@ -23,13 +23,14 @@ $deployment = @{
     }
 }
 
+Get-Module -name az.resource -ListAvailable
 
 New-AzResourceGroupDeploymentStack @deployment
 
 
 
 $deployment = @{
-    'Name' = 'myDeploymentStack'
+    'Name' = Get-Date -AsUTC -Format FileDateTime
     'ResourceGroupName' = 'bicep'
     'TemplateFile' = 'C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\bicepRepo\bicepRepo\deploy\main.bicep'
     'DefaultProfile' = $azureProfile
