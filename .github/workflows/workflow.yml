@@ -6,7 +6,7 @@ concurrency:
 on: [workflow_dispatch]
 
 env:
-    AZURE_RESOURCEGROUP_NAME: bicep
+    AZURE_RESOURCE_GROUP_NAME: bicep
 
 permissions:
   id-token: write
@@ -24,19 +24,16 @@ jobs:
       - name: Azure Login
         uses: Azure/login@v2.2.0
         with:
-          # client-id: ${{secrets.AZURE_CLIENT_ID}}
-          # tenant-id: ${{vars.TENANT_ID}}
-          # subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
-          client-id: '5a23adef-6f6e-459e-8921-62cd1f128ab7'
-          tenant-id: '464edfaa-792d-4ff8-84f0-94290a8360ae'
+          client-id: ${{vars.ENTRA_CLIENT_ID}}
+          tenant-id: ${{vars.ENTRA_TENANT_ID}}
           enable-AzPSSession: true
           allow-no-subscriptions: true
       - name: Deploy to Azure
         id: deploy_main
         env:
-          AZURE_RESOURCEGROUP_NAME: ${{env.AZURE_RESOURCEGROUP_NAME}}
-          AZURE_SUBSCRIPTION_ID: ${{secrets.AZURE_SUBSCRIPTION_ID}}
-          GITHUB_WORKFLOW_RUNNUMBER: ${{github.run_number}}
+          AZURE_RESOURCE_GROUP_NAME: ${{env.AZURE_RESOURCE_GROUP_NAME}}
+          AZURE_SUBSCRIPTION_ID: ${{vars.AZURE_SUBSCRIPTION_ID}}
+          GITHUB_WORKFLOW_RUN_NUMBER: ${{github.run_number}}
         run: |
             $ErrorActionPreference = 'Stop'
             Set-StrictMode -Version 3
@@ -48,8 +45,9 @@ jobs:
             Write-Information "Set the Azure subscription to [$env:AZURE_SUBSCRIPTION_ID]"
             Select-AzSubscription -SubscriptionId $env:AZURE_SUBSCRIPTION_ID
 
-            $deployment = @{
-                'Name' = $env:GITHUB_WORKFLOW_RUNNUMBER
+            $deploymentParameters = @{
+                'Name' = "$($env:GITHUB_WORKFLOW_RUN_NUMBER)_(Get-Date -AsUTC -Format 'yyyy-MM-ddTHH:mm:ss:ffff\Z')"
+                'ResourceGroupName' = $env:AZURE_RESOURCE_GROUP_NAME
                 'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'deploy' -AdditionalChildPath @('main.bicep')
                 'Force' = $true
                 'SkipTemplateParameterPrompt' = $true
@@ -58,6 +56,8 @@ jobs:
                 }
             }
 
-            ($results = New-AzResourceGroupDeployment @deployment -ResourceGroupName $env:AZURE_RESOURCEGROUP_NAME)
+            ($deploymentResults = New-AzResourceGroupDeployment @deploymentParameters)
 
-            "groupId=$($results.Outputs.groupId.Value)" >> $env:GITHUB_OUTPUT
+            Write-Information $deploymentResults
+
+            "groupId=$($deploymentResults.Outputs.groupId.Value)" >> $env:GITHUB_OUTPUT

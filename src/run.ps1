@@ -3,7 +3,7 @@ $azureProfile = Connect-AzAccount -Tenant 'spartabi.com'
 
 $azureContex = Get-AzContext
 
-
+Get-Date -AsUTC -Format 'yyyy-MM-ddTHH:mm:ss:ffff\Z'
 Select-AzContext -subsc
 
 $azureProfile1.GetType()
