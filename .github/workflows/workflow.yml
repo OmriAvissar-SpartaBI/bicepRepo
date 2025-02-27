@@ -58,6 +58,6 @@ jobs:
                 }
             }
 
-            ($results = New-AzResourceGroupDeployment @param -ResourceGroupName $env:AZURE_RESOURCEGROUP_NAME)
+            ($results = New-AzResourceGroupDeployment @deployment -ResourceGroupName $env:AZURE_RESOURCEGROUP_NAME)
 
             "groupId=$($results.Outputs.groupId.Value)" >> $env:GITHUB_OUTPUT
