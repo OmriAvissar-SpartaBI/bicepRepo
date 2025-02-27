@@ -40,7 +40,7 @@ jobs:
             $InformationPreference = 'Continue'
 
             Write-Information 'Install modules'
-            Install-Module -Name 'Az.Resources' -MaximumVersion  -Force
+            Install-Module -Name 'Az.Resources' -Force
 
             Write-Information "Set the Azure subscription to [$env:AZURE_SUBSCRIPTION_ID]"
             Select-AzSubscription -SubscriptionId $env:AZURE_SUBSCRIPTION_ID
