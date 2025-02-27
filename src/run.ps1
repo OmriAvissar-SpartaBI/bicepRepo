@@ -1,6 +1,14 @@
 $azureProfile = Connect-AzAccount -Tenant 'spartabi.com'
 
 
+$azureContex = Get-AzContext
+
+
+Select-AzContext -subsc
+
+$azureProfile1.GetType()
+
+
 $deployment = @{
     'Name' = 'myDeploymentStack'
     'ResourceGroupName' = 'bicep'

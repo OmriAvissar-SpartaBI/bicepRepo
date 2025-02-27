@@ -45,15 +45,12 @@ jobs:
             Write-Information 'Install modules'
             Install-Module -Name 'Az.Resources' -Force
 
-            Write-Information "AZURE_RESOURCEGROUP_NAME: $env:AZURE_RESOURCEGROUP_NAME"
-            Write-Information "AZURE_SUBSCRIPTION_ID: $env:AZURE_SUBSCRIPTION_ID"
-
+            Write-Information "Set the Azure subscription to [$env:AZURE_SUBSCRIPTION_ID]"
             Select-AzSubscription -SubscriptionId $env:AZURE_SUBSCRIPTION_ID
 
             $deployment = @{
                 'Name' = $env:GITHUB_WORKFLOW_RUNNUMBER
                 'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'deploy' -AdditionalChildPath @('main.bicep')
-                'DefaultProfile' = $azureProfile
                 'Force' = $true
                 'SkipTemplateParameterPrompt' = $true
                 'TemplateParameterObject' = @{
