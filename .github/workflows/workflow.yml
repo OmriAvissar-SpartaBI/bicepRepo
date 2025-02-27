@@ -3,7 +3,12 @@ concurrency:
     group: thEdenBbay
     cancel-in-progress: false
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'deploy/**'
 
 env:
     AZURE_RESOURCE_GROUP_NAME: bicep
