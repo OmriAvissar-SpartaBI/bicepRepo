@@ -28,7 +28,7 @@ jobs:
           tenant-id: ${{vars.TENANT_ID}}
           enable-AzPSSession: true
           allow-no-subscriptions: true
-          auth-type: 'SERVICE_PRINCIPAL'
+          # auth-type: 'SERVICE_PRINCIPAL'
       - name: Deploy to Azure
         id: deploy_main
         env:
