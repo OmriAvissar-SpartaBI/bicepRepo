@@ -46,7 +46,7 @@ jobs:
             Select-AzSubscription -SubscriptionId $env:AZURE_SUBSCRIPTION_ID
 
             $deploymentParameters = @{
-                'Name' = "$($env:GITHUB_WORKFLOW_RUN_NUMBER)_(Get-Date -AsUTC -Format 'yyyy-MM-ddTHH:mm:ss:ffff\Z')"
+                'Name' = "$($env:GITHUB_WORKFLOW_RUN_NUMBER)_(Get-Date -AsUTC -Format 'yyyy-MM-ddTHH-mm-ss-ffff\Z')"
                 'ResourceGroupName' = $env:AZURE_RESOURCE_GROUP_NAME
                 'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'deploy' -AdditionalChildPath @('main.bicep')
                 'Force' = $true
