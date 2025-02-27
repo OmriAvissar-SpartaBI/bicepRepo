@@ -2,7 +2,7 @@
 
 This repository contains the website for our toy company.
 
-## How to use
+## How to use it
 
 The Azure infrastructure is defined using [Bicep](/azure/azure-resource-manager/bicep).
 
