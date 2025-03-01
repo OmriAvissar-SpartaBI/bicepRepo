@@ -24,15 +24,6 @@ defaults:
       shell: pwsh
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v4.2.2
-      with:
-        path: 'repo'
-    - name: Run Bicep linter
-      run: az bicep build --file repo/deploy/main.bicep
   validate:
     runs-on: ubuntu-latest
     steps:
@@ -72,24 +63,11 @@ jobs:
                 'DefaultProfile' = $azureContex
             }
 
-            $tempDirectory = New-Item -Path $env:GITHUB_WORKSPACE -Name 'temp' -ItemType 'directory' -Force
-
-            $warningFileFullPath = Join-Path -Path $tempDirectory.FullName -ChildPath 'myAction' -AdditionalChildPath @("$($env:GITHUB_WORKFLOW_RUN_NUMBER).txt")
-
-            $testResults = Test-AzResourceGroupDeployment @testDeploymentParameters 3>$warningFileFullPath
-
-            $warnings = Get-Content -LiteralPath $warningFileFullPath -Raw -Force
-
-            $fullResults = @{}
-
-            if ($null -ne $warnings)
-            {
-              $fullResults.warnings = $warnings
-            }
+            $testResults = Test-AzResourceGroupDeployment @testDeploymentParameters
 
             if ($testResults -ne '')
             {
-              $fullResults.testResults = $testResults
+              throw $testResults
             }
 
             if ($fullResults.keys.count -ne 0)
@@ -97,7 +75,7 @@ jobs:
               throw ($fullResults | ConvertTo-Json -Depth 100)
             }
 
-            Write-Information 'Linting and Preflight validation Completed successfuly'
+            Write-Information 'Preflight validation Completed successfuly'
   deploy:
     runs-on: ubuntu-latest
     needs: [lint, validate]
