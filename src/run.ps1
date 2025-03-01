@@ -56,6 +56,9 @@ $a=Test-AzResourceGroupDeployment @testDeployment 4>$at
 
 $aaaa=Get-Content -LiteralPath 'C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\New Text Document.txt' -Raw -Force
 
+$b=New-Item -Path 'C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\' -Name 'temp' -ItemType 'directory' -Force
+
+$b.FullName
 
 -WarningVariable aaa -WarningAction SilentlyContinue
 

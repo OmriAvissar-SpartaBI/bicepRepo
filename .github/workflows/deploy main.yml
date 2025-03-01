@@ -72,10 +72,11 @@ jobs:
                 'DefaultProfile' = $azureContex
             }
 
-            $warningFileFullPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'temp' -AdditionalChildPath @('myAction',"$($env:GITHUB_WORKFLOW_RUN_NUMBER).txt")
+            $tempDirectory = New-Item -Path $env:GITHUB_WORKSPACE -Name 'temp' -ItemType 'directory' -Force
 
-            Write-Information $warningFileFullPath
-            ($testResults = Test-AzResourceGroupDeployment @testDeploymentParameters 3>$warningFileFullPath)
+            $warningFileFullPath = Join-Path -Path $tempDirectory.FullNmae -ChildPath 'myAction' -AdditionalChildPath @("$($env:GITHUB_WORKFLOW_RUN_NUMBER).txt")
+
+            $testResults = Test-AzResourceGroupDeployment @testDeploymentParameters 3>$warningFileFullPath
 
             $warnings = Get-Content -LiteralPath $warningFileFullPath -Raw -Force
 
