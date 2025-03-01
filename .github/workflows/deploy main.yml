@@ -74,7 +74,7 @@ jobs:
 
             $tempDirectory = New-Item -Path $env:GITHUB_WORKSPACE -Name 'temp' -ItemType 'directory' -Force
 
-            $warningFileFullPath = Join-Path -Path $tempDirectory.FullNmae -ChildPath 'myAction' -AdditionalChildPath @("$($env:GITHUB_WORKFLOW_RUN_NUMBER).txt")
+            $warningFileFullPath = Join-Path -Path $tempDirectory.FullName -ChildPath 'myAction' -AdditionalChildPath @("$($env:GITHUB_WORKFLOW_RUN_NUMBER).txt")
 
             $testResults = Test-AzResourceGroupDeployment @testDeploymentParameters 3>$warningFileFullPath
 
