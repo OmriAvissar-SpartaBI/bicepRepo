@@ -1,12 +1,7 @@
 $azureProfile = Connect-AzAccount -Tenant 'spartabi.com'
 
 
-$azureContex = Set-AzContext -DefaultProfile $azureProfile -Subscription '21ec9e4c-2010-47a0-8014-da19ee5608dd'
-
-
-
-
-Select-AzSubscription -Context $azureContex -
+$azureContex = Set-AzContext -DefaultProfile $azureProfile -Subscription '0a3d6877-fdae-4615-8ed5-194f34e9502a'
 
 
 
@@ -15,7 +10,7 @@ $deployment = @{
     'ResourceGroupName' = 'bicep'
     'TemplateFile' = 'C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\bicep\deploy\main.bicep'
     'ActionOnUnmanage' = 'DeleteAll'
-    'DefaultProfile' = $azureProfile
+    'DefaultProfile' = $azureContex
     'Description' = 'myDescription'
     'Force' = $true
     'SkipTemplateParameterPrompt' = $true
