@@ -13,7 +13,7 @@ on:
 
 env:
     AZURE_RESOURCE_GROUP_NAME: bicep
-    MAX_MODULE_VESRION: '7.9999.99999'
+    MAX_MODULE_VESRION: '7.9999.9999'
 
 permissions:
   id-token: write
