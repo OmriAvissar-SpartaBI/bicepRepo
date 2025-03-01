@@ -49,7 +49,7 @@ jobs:
             $InformationPreference = 'Continue'
 
             Write-Information 'Install modules'
-            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION $env:AZURE_SUBSCRIPTION_ID -Force
+            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION -Force
 
             $azureContex = Set-AzContext -Subscription $env:AZURE_SUBSCRIPTION_ID
 
@@ -96,7 +96,7 @@ jobs:
             $InformationPreference = 'Continue'
 
             Write-Information 'Install modules'
-            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION $env:AZURE_SUBSCRIPTION_ID -Force
+            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION -Force
 
             $azureContex = Set-AzContext -Subscription $env:AZURE_SUBSCRIPTION_ID
 
@@ -143,7 +143,7 @@ jobs:
             $InformationPreference = 'Continue'
 
             Write-Information 'Install modules'
-            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION $env:AZURE_SUBSCRIPTION_ID -Force
+            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION -Force
 
             $azureContex = Set-AzContext -Subscription $env:AZURE_SUBSCRIPTION_ID
 
@@ -184,7 +184,7 @@ jobs:
             $InformationPreference = 'Continue'
 
             Write-Information 'Install modules'
-            Install-Module -Name 'Az.Resources' -Force
+            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION -Force
 
             $azureContex = Get-AzContext
 
