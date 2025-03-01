@@ -51,7 +51,6 @@ $testDeployment = @{
 }
 
 
-$at='C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\New Text Document.txt'
 $a=Test-AzResourceGroupDeployment @testDeployment 3>$TempFile.FullName
 $TempFile = New-TemporaryFile
 
