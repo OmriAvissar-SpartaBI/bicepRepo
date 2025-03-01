@@ -13,6 +13,7 @@ on:
 
 env:
     AZURE_RESOURCE_GROUP_NAME: bicep
+    MAX_MODULE_VESRION: '7.9999.9999'
 
 permissions:
   id-token: write
@@ -48,7 +49,7 @@ jobs:
             $InformationPreference = 'Continue'
 
             Write-Information 'Install modules'
-            Install-Module -Name 'Az.Resources' -Force
+            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION $env:AZURE_SUBSCRIPTION_ID -Force
 
             $azureContex = Set-AzContext -Subscription $env:AZURE_SUBSCRIPTION_ID
 
@@ -95,7 +96,7 @@ jobs:
             $InformationPreference = 'Continue'
 
             Write-Information 'Install modules'
-            Install-Module -Name 'Az.Resources' -Force
+            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION $env:AZURE_SUBSCRIPTION_ID -Force
 
             $azureContex = Set-AzContext -Subscription $env:AZURE_SUBSCRIPTION_ID
 
@@ -115,7 +116,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: test
-    needs: [preview]
+    needs: [validate,preview]
     outputs:
       groupId: ${{ steps.deploy_main.outputs.groupId }}
     steps:
@@ -142,7 +143,7 @@ jobs:
             $InformationPreference = 'Continue'
 
             Write-Information 'Install modules'
-            Install-Module -Name 'Az.Resources' -Force
+            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION $env:AZURE_SUBSCRIPTION_ID -Force
 
             $azureContex = Set-AzContext -Subscription $env:AZURE_SUBSCRIPTION_ID
 
@@ -184,5 +185,7 @@ jobs:
 
             Write-Information 'Install modules'
             Install-Module -Name 'Az.Resources' -Force
+
+            $azureContex = Get-AzContext
 
             Get-AzADGroup -ObjectId $env:groupId -DefaultProfile $azureContex

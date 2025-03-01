@@ -55,6 +55,7 @@ Test-AzResourceGroupDeployment @testDeployment
 
 Get-AzResourceGroupDeploymentWhatIfResult @testDeployment
 
+find-Module -Name Az.resources -MaximumVersion 7.9999.9999
 
 
 $a=Get-AzADGroup -ObjectId '5341b1b9-f9ae-4630-bc4e-02975659add' -DefaultProfile $azureContex
