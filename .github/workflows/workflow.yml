@@ -48,18 +48,7 @@ jobs:
             Write-Information 'Install modules'
             Install-Module -Name 'Az.Resources' -Force
 
-            Write-Information 1
-            Get-AzContext
-            Start-Sleep -Seconds 2
-            Write-Information 2
-            Write-Information "Set the Azure subscription to [$env:AZURE_SUBSCRIPTION_ID]"
             $azureContex = Set-AzContext -Subscription $env:AZURE_SUBSCRIPTION_ID
-            Write-Information 3
-            Get-AzContext
-            Start-Sleep -Seconds 2
-            Write-Information 4
-            $azureContex
-            Start-Sleep -Seconds 2
 
             $deploymentParameters = @{
                 'Name' = "$($env:GITHUB_WORKFLOW_RUN_NUMBER)_$(Get-Date -Format FileDateTimeUniversal)"
