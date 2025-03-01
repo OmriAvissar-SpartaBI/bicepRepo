@@ -63,7 +63,24 @@ jobs:
                 'DefaultProfile' = $azureContex
             }
 
+<<<<<<< HEAD
             $testResults = Test-AzResourceGroupDeployment @testDeploymentParameters
+=======
+            $warningFile = New-TemporaryFile
+
+            $testResults = Test-AzResourceGroupDeployment @testDeploymentParameters 3>$warningFile.FullName
+
+            $warnings = Get-Content -LiteralPath $warningFile.FullName -Raw -Force
+
+            # $TempFile | Remove-Item -Force
+
+            $fullResults = @{}
+
+            if ($null -ne $warnings)
+            {
+              $fullResults.warnings = $warnings
+            }
+>>>>>>> 09aa6548dfd18eb4a6fe3fde98c1d9e7759ddea8
 
             if ($testResults -ne '')
             {
