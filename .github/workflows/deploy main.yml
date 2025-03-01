@@ -74,7 +74,7 @@ jobs:
 
             $warningFileFullPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'temp' -AdditionalChildPath @('myAction',"$($env:GITHUB_WORKFLOW_RUN_NUMBER).txt")
 
-            write-inforamtion $warningFileFullPath
+            Write-Information $warningFileFullPath
             ($testResults = Test-AzResourceGroupDeployment @testDeploymentParameters 3>$warningFileFullPath)
 
             $warnings = Get-Content -LiteralPath $warningFileFullPath -Raw -Force
