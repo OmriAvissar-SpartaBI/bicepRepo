@@ -13,7 +13,6 @@ on:
 
 env:
     AZURE_RESOURCE_GROUP_NAME: bicep
-    ENVIRONMENT_TYPE: Test
 
 permissions:
   id-token: write
@@ -26,6 +25,7 @@ defaults:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    environment: test
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4.2.2
@@ -71,9 +71,54 @@ jobs:
             }
 
             Write-Information 'Preflight validation Completed successfuly'
+  preview:
+    runs-on: ubuntu-latest
+    environment: test
+    needs: [validate]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4.2.2
+        with:
+          path: 'repo'
+      - name: Azure Login
+        uses: Azure/login@v2.2.0
+        with:
+          client-id: ${{vars.ENTRA_CLIENT_ID}}
+          tenant-id: ${{vars.ENTRA_TENANT_ID}}
+          enable-AzPSSession: true
+          allow-no-subscriptions: true
+      - name: Run what-if
+        env:
+          AZURE_RESOURCE_GROUP_NAME: ${{env.AZURE_RESOURCE_GROUP_NAME}}
+          AZURE_SUBSCRIPTION_ID: ${{vars.AZURE_SUBSCRIPTION_ID}}
+          GITHUB_WORKFLOW_RUN_NUMBER: ${{github.run_number}}
+        run: |
+            $ErrorActionPreference = 'Stop'
+            Set-StrictMode -Version 3
+            $InformationPreference = 'Continue'
+
+            Write-Information 'Install modules'
+            Install-Module -Name 'Az.Resources' -Force
+
+            $azureContex = Set-AzContext -Subscription $env:AZURE_SUBSCRIPTION_ID
+
+            $previewDeploymentParameters = @{
+                'ResourceGroupName' = $env:AZURE_RESOURCE_GROUP_NAME
+                'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'repo' -AdditionalChildPath @('deploy','main.bicep')
+                'SkipTemplateParameterPrompt' = $true
+                'TemplateParameterObject' = @{
+                  'userAssignedIdentityName' = 'UAMI-zzz'
+                }
+                'DefaultProfile' = $azureContex
+            }
+
+            ($previewDeploymentResults = Get-AzResourceGroupDeploymentWhatIfResult @previewDeploymentParameters)
+
+            Write-Information $previewDeploymentResults
   deploy:
     runs-on: ubuntu-latest
-    needs: [validate]
+    environment: test
+    needs: [preview]
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4.2.2
