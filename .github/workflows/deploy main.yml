@@ -185,4 +185,6 @@ jobs:
             Write-Information 'Install modules'
             Install-Module -Name 'Az.Resources' -Force
 
+            $azureContex = Get-AzContext
+
             Get-AzADGroup -ObjectId $env:groupId -DefaultProfile $azureContex
