@@ -2,8 +2,8 @@ targetScope = 'resourceGroup'
 
 extension microsoftGraphV1
 
-// var storageAccountName = 'storage${uniqueString(resourceGroup().id)}'
-// var storageBlobContainerName = 'config'
+var storageAccountName = 'storage${uniqueString(resourceGroup().id)}'
+var storageBlobContainerName = 'config'
 param userAssignedIdentityName string
 // var deploymentScriptName = 'CopyConfigScript'
 
@@ -12,40 +12,40 @@ param userAssignedIdentityName string
 //   name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
 // }
 
-// resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-//   name: storageAccountName
-//   tags: {
-//     displayName: storageAccountName
-//   }
-//   location: resourceGroup().location
-//   kind: 'StorageV2'
-//   sku: {
-//     name: 'Standard_LRS'
-//   }
-//   properties: {
-//     allowBlobPublicAccess: true
-//     encryption: {
-//       services: {
-//         blob: {
-//           enabled: true
-//         }
-//       }
-//       keySource: 'Microsoft.Storage'
-//     }
-//     supportsHttpsTrafficOnly: true
-//   }
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: storageAccountName
+  tags: {
+    displayName: storageAccountName
+  }
+  location: resourceGroup().location
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+  properties: {
+    allowBlobPublicAccess: true
+    encryption: {
+      services: {
+        blob: {
+          enabled: true
+        }
+      }
+      keySource: 'Microsoft.Storage'
+    }
+    supportsHttpsTrafficOnly: true
+  }
 
-//   resource blobService 'blobServices' existing = {
-//     name: 'default'
+  resource blobService 'blobServices' existing = {
+    name: 'default'
 
-//     resource blobContainer 'containers' = {
-//       name: storageBlobContainerName
-//       properties: {
-//         publicAccess: 'Blob'
-//       }
-//     }
-//   }
-// }
+    resource blobContainer 'containers' = {
+      name: storageBlobContainerName
+      properties: {
+        publicAccess: 'Blob'
+      }
+    }
+  }
+}
 
 
 

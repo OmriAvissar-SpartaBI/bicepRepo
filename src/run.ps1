@@ -4,7 +4,6 @@ $azureProfile = Connect-AzAccount -Tenant 'spartabi.com'
 $azureContex = Set-AzContext -DefaultProfile $azureProfile -Subscription '0a3d6877-fdae-4615-8ed5-194f34e9502a'
 
 
-
 $deployment = @{
     'Name' = 'myDeploymentStack'
     'ResourceGroupName' = 'bicep'
@@ -41,7 +40,19 @@ $deployment = @{
 New-AzResourceGroupDeployment @deployment
 
 
-# Get-AzDeploymentScriptLog -ResourceGroupName 'bicep' -Name 'CopyConfigScript'
+$testDeployment = @{
+    'ResourceGroupName' = 'bicep'
+    'TemplateFile' = 'C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\bicepRepo\bicepRepo\deploy\main.bicep'
+    'DefaultProfile' = $azureProfile
+    'SkipTemplateParameterPrompt' = $true
+    'TemplateParameterObject' = @{
+        'userAssignedIdentityName' = 'UAMI-zzz'
+    }
+}
+
+
+($a=Test-AzResourceGroupDeployment @testDeployment)
+
 
 $deletion = @{
     'Name' = 'myDeploymentStack'
