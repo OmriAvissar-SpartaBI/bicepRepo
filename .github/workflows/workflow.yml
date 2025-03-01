@@ -33,7 +33,7 @@ jobs:
           client-id: ${{vars.ENTRA_CLIENT_ID}}
           tenant-id: ${{vars.ENTRA_TENANT_ID}}
           enable-AzPSSession: true
-          allow-no-subscriptions: true
+          allow-no-subscriptions: false
       - name: Deploy to Azure
         id: deploy_main
         env:

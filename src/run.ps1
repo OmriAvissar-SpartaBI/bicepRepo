@@ -1,12 +1,13 @@
 $azureProfile = Connect-AzAccount -Tenant 'spartabi.com'
 
 
-$azureContex = Get-AzContext
+$azureContex = Set-AzContext -DefaultProfile $azureProfile -Subscription '21ec9e4c-2010-47a0-8014-da19ee5608dd'
 
-Get-Date -AsUTC -Format 'yyyy-MM-ddTHH:mm:ss:ffff\Z'
-Select-AzContext -subsc
 
-$azureProfile1.GetType()
+
+
+Select-AzSubscription -Context $azureContex -
+
 
 
 $deployment = @{
