@@ -34,7 +34,7 @@ jobs:
           tenant-id: ${{vars.ENTRA_TENANT_ID}}
           subscription-id: 'fc8e1aad-9949-42ee-93fd-8e79d12716e5'
           enable-AzPSSession: true
-          allow-no-subscriptions: true
+          allow-no-subscriptions: false
       - name: Deploy to Azure
         id: deploy_main
         env:
