@@ -51,8 +51,22 @@ $testDeployment = @{
 }
 
 
-($a=Test-AzResourceGroupDeployment @testDeployment)
+$at='C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\New Text Document.txt'
+$a=Test-AzResourceGroupDeployment @testDeployment 4>$at
 
+$aaaa=Get-Content -LiteralPath 'C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\New Text Document.txt' -Raw -Force
+
+
+-WarningVariable aaa -WarningAction SilentlyContinue
+
+$null -eq $aaaa
+
+
+$a=@{}
+
+$a.Keys.Count
+
+Get-ChildItem 'gfgg' -ErrorVariable 'aaa'
 
 $deletion = @{
     'Name' = 'myDeploymentStack'

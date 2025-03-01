@@ -29,6 +29,8 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4.2.2
+      with:
+        path: 'repo'
     - name: Run Bicep linter
       run: az bicep build --file deploy/main.bicep
   validate:
@@ -43,7 +45,7 @@ jobs:
           tenant-id: ${{vars.ENTRA_TENANT_ID}}
           enable-AzPSSession: true
           allow-no-subscriptions: true
-      - name: Run preflight validation
+      - name: Run linting and preflight validation
         env:
           AZURE_RESOURCE_GROUP_NAME: ${{env.AZURE_RESOURCE_GROUP_NAME}}
           AZURE_SUBSCRIPTION_ID: ${{vars.AZURE_SUBSCRIPTION_ID}}
@@ -60,7 +62,7 @@ jobs:
 
             $testDeploymentParameters = @{
                 'ResourceGroupName' = $env:AZURE_RESOURCE_GROUP_NAME
-                'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'deploy' -AdditionalChildPath @('main.bicep')
+                'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'repo' -AdditionalChildPath @('deploy','main.bicep')
                 'SkipTemplateParameterPrompt' = $true
                 'TemplateParameterObject' = @{
                   'userAssignedIdentityName' = 'UAMI-zzz'
@@ -68,14 +70,30 @@ jobs:
                 'DefaultProfile' = $azureContex
             }
 
-            ($testResults = Test-AzResourceGroupDeployment @testDeploymentParameters)
+            $warningFileFullPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'temp' -AdditionalChildPath @("$($env:GITHUB_WORKFLOW_RUN_NUMBER).txt")
 
-            if ($testResults - ne '')
+            ($testResults = Test-AzResourceGroupDeployment @testDeploymentParameters 3>$warningFileFullPath)
+
+            $warnings = Get-Content -LiteralPath $warningFileFullPath -Raw -Force
+
+            $fullResults = @{}
+
+            if ($null -ne $warnings)
             {
-              Throw $testResults
+              $fullResults.warnings = $warnings
             }
 
-            Write-Information 'Preflight validation Completed successfuly'
+            if ($testResults -ne '')
+            {
+              $fullResults.testResults = $testResults
+            }
+
+            if ($fullResults.keys.count -ne 0)
+            {
+              throw ($fullResults | ConvertTo-Json -Depth 100)
+            }
+
+            Write-Information 'Linting and Preflight validation Completed successfuly'
   deploy:
     runs-on: ubuntu-latest
     needs: [lint, validate]
@@ -108,7 +126,7 @@ jobs:
             $deploymentParameters = @{
                 'Name' = "$($env:GITHUB_WORKFLOW_RUN_NUMBER)_$(Get-Date -Format FileDateTimeUniversal)"
                 'ResourceGroupName' = $env:AZURE_RESOURCE_GROUP_NAME
-                'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'deploy' -AdditionalChildPath @('main.bicep')
+                'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'repo' -AdditionalChildPath @('deploy','main.bicep')
                 'Force' = $true
                 'SkipTemplateParameterPrompt' = $true
                 'TemplateParameterObject' = @{
