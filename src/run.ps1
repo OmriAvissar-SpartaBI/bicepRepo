@@ -52,9 +52,15 @@ $testDeployment = @{
 
 
 $at='C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\New Text Document.txt'
-$a=Test-AzResourceGroupDeployment @testDeployment 4>$at
+$a=Test-AzResourceGroupDeployment @testDeployment 3>$TempFile.FullName
+$TempFile = New-TemporaryFile
 
-$aaaa=Get-Content -LiteralPath 'C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\New Text Document.txt' -Raw -Force
+$TempFile.FullName
+
+$aaaa=Get-Content -LiteralPath $TempFile.FullName -Raw -Force
+
+$TempFile | Remove-Item -Force
+Remove-Item -
 
 $b=New-Item -Path 'C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\' -Name 'temp' -ItemType 'directory' -Force
 
