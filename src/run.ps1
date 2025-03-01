@@ -51,30 +51,18 @@ $testDeployment = @{
 }
 
 
-$a=Test-AzResourceGroupDeployment @testDeployment 3>$TempFile.FullName
-$TempFile = New-TemporaryFile
+Test-AzResourceGroupDeployment @testDeployment
 
-$TempFile.FullName
-
-$aaaa=Get-Content -LiteralPath $TempFile.FullName -Raw -Force
-
-$TempFile | Remove-Item -Force
-Remove-Item -
-
-$b=New-Item -Path 'C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\' -Name 'temp' -ItemType 'directory' -Force
-
-$b.FullName
-
--WarningVariable aaa -WarningAction SilentlyContinue
-
-$null -eq $aaaa
+Get-AzResourceGroupDeploymentWhatIfResult @testDeployment
 
 
-$a=@{}
 
-$a.Keys.Count
+$a=Get-AzADGroup -ObjectId '5341b1b9-f9ae-4630-bc4e-02975659add' -DefaultProfile $azureContex
 
-Get-ChildItem 'gfgg' -ErrorVariable 'aaa'
+
+
+
+
 
 $deletion = @{
     'Name' = 'myDeploymentStack'
