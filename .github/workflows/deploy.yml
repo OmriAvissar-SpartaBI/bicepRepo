@@ -48,8 +48,7 @@ jobs:
           AZURE_RESOURCE_GROUP_NAME: ${{inputs.AZURE_RESOURCE_GROUP_NAME}}
           AZURE_SUBSCRIPTION_ID: ${{inputs.AZURE_SUBSCRIPTION_ID}}
           MAX_MODULE_VESRION: ${{inputs.MAX_MODULE_VESRION}}
-          userAssignedIdentityName: ${{inputs.userAssignedIdentityName}}
-          TemplateParameterFilePath: ${{inputs.TemplateParameterFilePath}}
+          TemplateParameterFilePath: ${{env.TemplateParameterFilePath}}
         run: |
             $ErrorActionPreference = 'Stop'
             Set-StrictMode -Version 3
@@ -82,7 +81,7 @@ jobs:
           AZURE_RESOURCE_GROUP_NAME: ${{inputs.AZURE_RESOURCE_GROUP_NAME}}
           AZURE_SUBSCRIPTION_ID: ${{inputs.AZURE_SUBSCRIPTION_ID}}
           MAX_MODULE_VESRION: ${{inputs.MAX_MODULE_VESRION}}
-          TemplateParameterFilePath: ${{inputs.TemplateParameterFilePath}}
+          TemplateParameterFilePath: ${{env.TemplateParameterFilePath}}
         run: |
             $ErrorActionPreference = 'Stop'
             Set-StrictMode -Version 3
@@ -127,7 +126,7 @@ jobs:
           AZURE_SUBSCRIPTION_ID: ${{inputs.AZURE_SUBSCRIPTION_ID}}
           MAX_MODULE_VESRION: ${{inputs.MAX_MODULE_VESRION}}
           GITHUB_WORKFLOW_RUN_NUMBER: ${{github.run_number}}
-          TemplateParameterFilePath: ${{inputs.TemplateParameterFilePath}}
+          TemplateParameterFilePath: ${{env.TemplateParameterFilePath}}
         run: |
             $ErrorActionPreference = 'Stop'
             Set-StrictMode -Version 3
