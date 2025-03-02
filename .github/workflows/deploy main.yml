@@ -41,7 +41,7 @@ jobs:
       MAX_MODULE_VESRION: ${{ env.MAX_MODULE_VESRION }}
       TemplateParameterFilePath: './deploy/main.test.bicepparam'
   deploy-prod:
-      uses: ./.github/workflows/reusable/deploy.yml
+      uses: ./.github/workflows/deploy.yml
       needs: [deploy-test]
       with:
         environmentType: prod
