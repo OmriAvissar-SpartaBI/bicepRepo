@@ -32,7 +32,6 @@ jobs:
   deploy-test:
     uses: ./.github/workflows/deploy.yml
     needs: [lint]
-    environment: test
     with:
       environmentType: test
       AZURE_RESOURCE_GROUP_NAME: bicep-test
@@ -40,7 +39,6 @@ jobs:
       ENTRA_TENANT_ID: ${{ vars.ENTRA_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID_TEST }}
       MAX_MODULE_VESRION: ${{ vars.MAX_MODULE_VESRION }}
-      TemplateParameterFilePath: './deploy/main.test.bicepparam'
   deploy-prod:
       uses: ./.github/workflows/deploy.yml
       needs: [deploy-test]
@@ -51,4 +49,3 @@ jobs:
         ENTRA_TENANT_ID: ${{ vars.ENTRA_TENANT_ID }}
         AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID_PROD }}
         MAX_MODULE_VESRION: ${{ vars.MAX_MODULE_VESRION }}
-        TemplateParameterFilePath: './deploy/main.prod.bicepparam'

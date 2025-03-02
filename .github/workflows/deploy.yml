@@ -21,9 +21,9 @@ on:
       MAX_MODULE_VESRION:
           required: true
           type: string
-      TemplateParameterFilePath:
-          required: true
-          type: string
+
+env:
+  TemplateParameterFilePath: ./deploy/main.${{inputs.environmentType}}.bicepparam
 
 defaults:
   run:
