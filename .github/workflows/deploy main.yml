@@ -12,7 +12,7 @@ on:
       - 'deploy/**'
 
 env:
-  MAX_MODULE_VESRION: '7.9999.9999'
+  myParam: fictive
 
 permissions:
   id-token: write
@@ -38,7 +38,7 @@ jobs:
       ENTRA_CLIENT_ID: ${{ vars.ENTRA_CLIENT_ID_TEST }}
       ENTRA_TENANT_ID: ${{ vars.ENTRA_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID_TEST }}
-      MAX_MODULE_VESRION: ${{ env.MAX_MODULE_VESRION }}
+      MAX_MODULE_VESRION: ${{ vars.MAX_MODULE_VESRION }}
       TemplateParameterFilePath: './deploy/main.test.bicepparam'
   deploy-prod:
       uses: ./.github/workflows/deploy.yml
@@ -49,5 +49,5 @@ jobs:
         ENTRA_CLIENT_ID: ${{ vars.ENTRA_CLIENT_ID_PROD }}
         ENTRA_TENANT_ID: ${{ vars.ENTRA_TENANT_ID }}
         AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID_PROD }}
-        MAX_MODULE_VESRION: ${{ env.MAX_MODULE_VESRION }}
+        MAX_MODULE_VESRION: ${{ vars.MAX_MODULE_VESRION }}
         TemplateParameterFilePath: './deploy/main.prod.bicepparam'
