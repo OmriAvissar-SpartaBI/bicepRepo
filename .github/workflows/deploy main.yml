@@ -45,7 +45,7 @@ jobs:
       needs: [deploy-test]
       with:
         environmentType: prod
-        AZURE_RESOURCE_GROUP_NAME: bicep-prod
+        AZURE_RESOURCE_GROUP_NAME: bicep
         ENTRA_CLIENT_ID: ${{ vars.ENTRA_CLIENT_ID_PROD }}
         ENTRA_TENANT_ID: ${{ vars.ENTRA_TENANT_ID }}
         AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID_PROD }}
