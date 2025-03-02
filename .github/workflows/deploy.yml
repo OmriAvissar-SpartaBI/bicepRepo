@@ -23,7 +23,8 @@ on:
           type: string
 
 env:
-  TemplateParameterFilePath: ./deploy/main.${{inputs.environmentType}}.bicepparam
+  # TemplateParameterFilePath: ./deploy/main.${{inputs.environmentType}}.bicepparam
+  TemplateParameterFilePath: ./deploy/main.bicepparam
 
 defaults:
   run:
@@ -49,6 +50,7 @@ jobs:
           AZURE_SUBSCRIPTION_ID: ${{inputs.AZURE_SUBSCRIPTION_ID}}
           MAX_MODULE_VESRION: ${{inputs.MAX_MODULE_VESRION}}
           TemplateParameterFilePath: ${{env.TemplateParameterFilePath}}
+          deploymentEnvironment: ${{ inputs.environmentType }}
         run: |
             $ErrorActionPreference = 'Stop'
             Set-StrictMode -Version 3
@@ -82,6 +84,7 @@ jobs:
           AZURE_SUBSCRIPTION_ID: ${{inputs.AZURE_SUBSCRIPTION_ID}}
           MAX_MODULE_VESRION: ${{inputs.MAX_MODULE_VESRION}}
           TemplateParameterFilePath: ${{env.TemplateParameterFilePath}}
+          deploymentEnvironment: ${{ inputs.environmentType }}
         run: |
             $ErrorActionPreference = 'Stop'
             Set-StrictMode -Version 3
@@ -127,6 +130,7 @@ jobs:
           MAX_MODULE_VESRION: ${{inputs.MAX_MODULE_VESRION}}
           GITHUB_WORKFLOW_RUN_NUMBER: ${{github.run_number}}
           TemplateParameterFilePath: ${{env.TemplateParameterFilePath}}
+          deploymentEnvironment: ${{ inputs.environmentType }}
         run: |
             $ErrorActionPreference = 'Stop'
             Set-StrictMode -Version 3

@@ -18,7 +18,6 @@ $deployment = @{
     }
 }
 
-Get-Module -name az.resource -ListAvailable
 
 New-AzResourceGroupDeploymentStack @deployment
 
@@ -31,13 +30,14 @@ $deployment = @{
     'DefaultProfile' = $azureProfile
     'Force' = $true
     'SkipTemplateParameterPrompt' = $true
-    'TemplateParameterObject' = @{
-        'userAssignedIdentityName' = 'UAMI-zzz'
-    }
+    # 'TemplateParameterObject' = @{
+    #     'userAssignedIdentityName' = 'UAMI-zzz'
+    # }
 }
 
+$env:deploymentEnvironment = 'prod'
 
-New-AzResourceGroupDeployment @deployment
+New-AzResourceGroupDeployment @deployment -TemplateParameterFile 'C:\Users\Omri Avissar\OneDrive - SpartaBI Ltd\Desktop\bicepRepo\bicepRepo\deploy\main.bicepparam'
 
 
 $testDeployment = @{
