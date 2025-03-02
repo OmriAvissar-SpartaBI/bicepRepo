@@ -32,6 +32,7 @@ jobs:
   deploy-test:
     uses: ./.github/workflows/deploy.yml
     needs: [lint]
+    environment: test
     with:
       environmentType: test
       AZURE_RESOURCE_GROUP_NAME: bicep-test
