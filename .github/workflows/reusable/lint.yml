@@ -1,0 +1,23 @@
+name: lint
+
+on:
+  workflow_call:
+    inputs:
+        bicepPath:
+            required: true
+            type: string
+
+defaults:
+  run:
+      shell: pwsh
+
+jobs:
+  lint:
+    name: Lint code
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4.2.2
+    - name: Linting
+      run: |
+        az bicep build --file ${{inputs.bicepPath}}

@@ -1,0 +1,181 @@
+name: deploy
+
+on:
+  workflow_call:
+    inputs:
+      environmentType:
+        required: true
+        type: string
+      AZURE_RESOURCE_GROUP_NAME:
+        required: true
+        type: string
+      ENTRA_CLIENT_ID:
+        required: true
+        type: string
+      ENTRA_TENANT_ID:
+        required: true
+        type: string
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+        type: string
+      MAX_MODULE_VESRION:
+          required: true
+          type: string
+      TemplateParameterFilePath:
+          required: true
+          type: string
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4.2.2
+      - name: Azure Login
+        uses: Azure/login@v2.2.0
+        with:
+          client-id: ${{inputs.ENTRA_CLIENT_ID}}
+          tenant-id: ${{inputs.ENTRA_TENANT_ID}}
+          enable-AzPSSession: true
+          allow-no-subscriptions: true
+      - if: inputs.environmentType != 'prod'
+        name: Preflight Validation
+        env:
+          AZURE_RESOURCE_GROUP_NAME: ${{inputs.AZURE_RESOURCE_GROUP_NAME}}
+          AZURE_SUBSCRIPTION_ID: ${{inputs.AZURE_SUBSCRIPTION_ID}}
+          MAX_MODULE_VESRION: ${{inputs.MAX_MODULE_VESRION}}
+          userAssignedIdentityName: ${{inputs.userAssignedIdentityName}}
+          TemplateParameterFilePath: ${{inputs.TemplateParameterFilePath}}
+        run: |
+            $ErrorActionPreference = 'Stop'
+            Set-StrictMode -Version 3
+            $InformationPreference = 'Continue'
+
+            Write-Information 'Install modules'
+            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION -Force
+
+            $azureContex = Set-AzContext -Subscription $env:AZURE_SUBSCRIPTION_ID
+
+            $testDeploymentParameters = @{
+                'ResourceGroupName' = $env:AZURE_RESOURCE_GROUP_NAME
+                'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'deploy' -AdditionalChildPath @('main.bicep')
+                'SkipTemplateParameterPrompt' = $true
+                'TemplateParameterFile' = $env:TemplateParameterFilePath
+                'DefaultProfile' = $azureContex
+            }
+
+            $testResults = Test-AzResourceGroupDeployment @testDeploymentParameters
+
+            if ($testResults -ne '')
+            {
+              throw $testResults
+            }
+
+            Write-Information 'Preflight validation Completed successfuly'
+      - if: inputs.environmentType == 'prod'
+        name: Run what-if
+        env:
+          AZURE_RESOURCE_GROUP_NAME: ${{inputs.AZURE_RESOURCE_GROUP_NAME}}
+          AZURE_SUBSCRIPTION_ID: ${{inputs.AZURE_SUBSCRIPTION_ID}}
+          MAX_MODULE_VESRION: ${{inputs.MAX_MODULE_VESRION}}
+          TemplateParameterFilePath: ${{inputs.TemplateParameterFilePath}}
+        run: |
+            $ErrorActionPreference = 'Stop'
+            Set-StrictMode -Version 3
+            $InformationPreference = 'Continue'
+
+            Write-Information 'Install modules'
+            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION -Force
+
+            $azureContex = Set-AzContext -Subscription $env:AZURE_SUBSCRIPTION_ID
+
+            $previewDeploymentParameters = @{
+                'ResourceGroupName' = $env:AZURE_RESOURCE_GROUP_NAME
+                'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'deploy' -AdditionalChildPath @('main.bicep')
+                'SkipTemplateParameterPrompt' = $true
+                'TemplateParameterFile' = $env:TemplateParameterFilePath
+                'DefaultProfile' = $azureContex
+            }
+
+            ($previewDeploymentResults = Get-AzResourceGroupDeploymentWhatIfResult @previewDeploymentParameters)
+
+            Write-Information $previewDeploymentResults
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [validate]
+    environment: ${{ inputs.environmentType }}
+    outputs:
+      groupId: ${{steps.deploy_main.outputs.groupId}}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4.2.2
+      - name: Azure Login
+        uses: Azure/login@v2.2.0
+        with:
+          client-id: ${{inputs.ENTRA_CLIENT_ID}}
+          tenant-id: ${{inputs.ENTRA_TENANT_ID}}
+          enable-AzPSSession: true
+          allow-no-subscriptions: true
+      - name: Deploy to Azure
+        id: deploy_main
+        env:
+          AZURE_RESOURCE_GROUP_NAME: ${{inputs.AZURE_RESOURCE_GROUP_NAME}}
+          AZURE_SUBSCRIPTION_ID: ${{inputs.AZURE_SUBSCRIPTION_ID}}
+          MAX_MODULE_VESRION: ${{inputs.MAX_MODULE_VESRION}}
+          GITHUB_WORKFLOW_RUN_NUMBER: ${{github.run_number}}
+          TemplateParameterFilePath: ${{inputs.TemplateParameterFilePath}}
+        run: |
+            $ErrorActionPreference = 'Stop'
+            Set-StrictMode -Version 3
+            $InformationPreference = 'Continue'
+
+            Write-Information 'Install modules'
+            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION -Force
+
+            $azureContex = Set-AzContext -Subscription $env:AZURE_SUBSCRIPTION_ID
+
+            $deploymentParameters = @{
+                'Name' = "$($env:GITHUB_WORKFLOW_RUN_NUMBER)_$(Get-Date -Format FileDateTimeUniversal)"
+                'ResourceGroupName' = $env:AZURE_RESOURCE_GROUP_NAME
+                'TemplateFile' = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'deploy' -AdditionalChildPath @('main.bicep')
+                'Force' = $true
+                'SkipTemplateParameterPrompt' = $true
+                'TemplateParameterFile' = $env:TemplateParameterFilePath
+                'DefaultProfile' = $azureContex
+            }
+
+            ($deploymentResults = New-AzResourceGroupDeployment @deploymentParameters)
+
+            Write-Information $deploymentResults
+
+            "groupId=$($deploymentResults.Outputs.groupId.Value)" >> $env:GITHUB_OUTPUT
+  smoke-test:
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    steps:
+      - name: Azure Login
+        uses: Azure/login@v2.2.0
+        with:
+          client-id: ${{inputs.ENTRA_CLIENT_ID}}
+          tenant-id: ${{inputs.ENTRA_TENANT_ID}}
+          enable-AzPSSession: true
+          allow-no-subscriptions: true
+      - name: Validate group existance
+        env:
+          groupId: ${{needs.deploy.outputs.groupId}}
+          MAX_MODULE_VESRION: ${{inputs.MAX_MODULE_VESRION}}
+        run: |
+            $ErrorActionPreference = 'Stop'
+            Set-StrictMode -Version 3
+            $InformationPreference = 'Continue'
+
+            Write-Information 'Install modules'
+            Install-Module -Name 'Az.Resources' -MaximumVersion $env:MAX_MODULE_VESRION -Force
+
+            $azureContex = Get-AzContext
+
+            Get-AzADGroup -ObjectId $env:groupId -DefaultProfile $azureContex
